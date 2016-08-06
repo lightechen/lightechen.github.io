@@ -1,0 +1,103 @@
+.transition-all {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  transition: all 0.5s;
+}
+.background-cover {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+}
+.serif {
+  font-family: 'Lora', 'Times New Roman', serif;
+}
+.sans-serif,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+body {
+  font-size: 14px;
+  color: #404040;
+  font-family: "Helvetica Neue", Arial, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
+  -webkit-font-smoothing: antialiased;
+  font-weight: 100;
+}
+p {
+  line-height: 1.5;
+  margin: 15px 0;
+}
+p a {
+  text-decoration: underline;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 800;
+}
+a {
+  color: #404040;
+}
+a:hover,
+a:focus {
+  color: #0085a1;
+}
+a img:hover,
+a img:focus {
+  cursor: zoom-in;
+}
+.sidebar {
+  background: #333;
+  position: fixed;
+  width: 150px;
+  height: 100%;
+  color: #ddd;
+  z-index: 1000;
+}
+.sidebar a {
+  display: block;
+  margin-bottom: 20px;
+}
+.sidebar .profile {
+  text-align: center;
+  padding-top: 40px;
+  padding-bottom: 10px;
+  font-size: 20px;
+}
+.sidebar .profile img {
+  width: 50%;
+  height: auto;
+  border-radius: 50%;
+}
+.sidebar .menu {
+  list-style: none;
+  font-weight: 100;
+  font-size: 14px;
+  margin-top: 40px;
+  padding: 0;
+}
+.sidebar .menu li {
+  padding: 10px 27px;
+  cursor: pointer;
+}
+.sidebar .menu li span {
+  margin-right: 19px;
+}
+.sidebar .menu li:hover {
+  background: #232323;
+}
+.main {
+  position: relative;
+  right: 0;
+  z-index: 1;
+  padding-left: 150px;
+  padding-top: 25px;
+}
