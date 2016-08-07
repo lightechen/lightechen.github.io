@@ -16,7 +16,7 @@
 
     <!--Author-->
     
-        <meta name="author" content="John Doe">
+        <meta name="author" content="Light">
     
 
     <!--Open Graph Title-->
@@ -25,7 +25,7 @@
     
 
     <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="Hexo"/>
+    <meta property="og:site_name" content="Light&#39;s Blog"/>
 
     <!--Page Cover-->
     
@@ -34,7 +34,7 @@
 
     <!-- Title -->
     
-    <title>关于AngularJS的双向数据绑定 - Hexo</title>
+    <title>关于AngularJS的双向数据绑定 - Light&#39;s Blog</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
@@ -103,12 +103,170 @@
                     <p>AngularJS的双向数据绑定可以说解决了前端开发的一个痛点，当绑定内存数据发生更新时我们不需要再手动逐个更新View层面的数据，节省了大量的代码量，同时，这也是MVVM模式能够流行起来的基础。习惯了数据绑定的开发模式后再回去看手动使用选择器更新数据的流程就会显得繁琐很多。</p>
 <p>由于在公司需要做一个前端session,选了AngularJS双向数据绑定的题目，在这里简要记录一下分享流程。</p>
 <h4 id="一-什么是双向数据绑定"><a href="#一-什么是双向数据绑定" class="headerlink" title="一.什么是双向数据绑定"></a>一.什么是双向数据绑定</h4><p>在了解什么是双向数据绑定之前，我们首先要先明白什么是单向数据绑定。传统的WEB前端开发进行开发时，如果需要对HTML进行模板化，一般先由我们将模板写好，然后和数据一起整合成HTML代码，再将这些代码插入到文档中。</p>
-<p><img src="/img/单向数据绑定.png" alt="Alt text"></p>
 <p>单向数据绑定的缺点是HTML代码一旦生成之后就难以修改，如果数据发生更改，我们不得不重新渲染整段HTML代码。单向数据绑定经常借由形如下面的形式实现：</p>
 <pre><code>var html = &apos;&lt;h1&gt;&apos; + data + &lt;/h1&gt;;
 document.getElementById(&apos;#container&apos;).innerHtml = html;
 </code></pre><p>由于单向数据绑定的局限性，就有了更为便捷的双向数据绑定，也就是所谓的MVVM（Model-View-View-Model）模式。双向数据绑定的特点就是一旦数据模型发生了变化，相对应的视图也会跟着更新，而视图数据的更新也会相对应地更新到模型中去。这样一来，我们就省下了单向数据绑定时大量的CRUD操作。</p>
-<p><img src="/img/双向数据绑定.png" alt="Alt text"></p>
+<p>目前，实现双向数据绑定的框架avalon,angularJS,vue.js等等。</p>
+<h4 id="二-Model-View的更新－－－脏检查机制"><a href="#二-Model-View的更新－－－脏检查机制" class="headerlink" title="二.Model-View的更新－－－脏检查机制"></a>二.Model-View的更新－－－脏检查机制</h4><p>目前，比较流行的MVVM框架几乎都遵循脏检查的机制来实现双向数据绑定。所谓脏检查，即一种不关心你如何以及何时改变的数据，只关心在特定的检查阶段数据是否改变的技术。</p>
+<p>在AngularJS中，所有的scope都是由一个Scope构造器生成的一个实例，我们可以找到Scope构造器的代码：</p>
+<pre><code>function Scope(){
+    ...
+    this.$$watchers = null;
+    ...
+}
+</code></pre><p>需要我们关注的是Scope中的$$watchers属性，可以看到，在初始化的时候，它的值是null，接着我们观察Scope的原型，会发现以下几个方法：</p>
+<pre><code>Scope.prototype = {
+  constructor: Scope,
+
+  $watch: function(){
+      ...
+  },
+
+  $digest: function(){
+      ...
+  },
+  $apply: function(){
+      ...
+  }
+}
+</code></pre><p>脏检查机制主要依赖这三个方法来实现，首先我们来看看$watch方法：</p>
+<pre><code>$watch: function() {
+    ...
+    var scope = this,
+        array = scope.$$watchers,
+        watcher = {
+          fn: listener,
+          last: initWatchVal,
+          get: get,
+          exp: prettyPrintExpression || watchExp,
+          eq: !!objectEquality
+        };
+
+    lastDirtyWatch = null;
+
+    if (!isFunction(listener)) {
+      watcher.fn = noop;
+    }
+
+    if (!array) {
+      array = scope.$$watchers = [];
+    }
+
+    array.unshift(watcher);
+    ...
+}
+</code></pre><p>$watch的作用是给数据添加监听器，每当页面上有数据需要监听时，就需要调用$watch方法，可以看到$watch方法中定义array指向scope.$$watchers，如果scope.$$watchers尚未初始化，则将初始化为数组，并向数组头部推入一个监听器watcher，watcher对象中包含获取数据模型当前值的方法get以及一旦值发生改变需要调用的回调函数fn<br>由此可见，Angular通过scope.$$watchers来维护当前scope中所有需要监听的数据</p>
+<p>而真正进行脏检查的是$digest方法：</p>
+<pre><code>$digest: function() {
+    ...
+    do { // &quot;while dirty&quot; loop
+      dirty = false;
+      current = target;
+      ...
+      traverseScopesLoop:
+      do { // &quot;traverse the scopes&quot; loop
+        if ((watchers = current.$$watchers)) {
+          // process our watches
+          length = watchers.length;
+          //逐个遍历所有的watcher
+          while (length--) {
+            try {                
+              watch = watchers[length];
+              if (watch) {
+                   //检查值是否发生改变
+                if ((value = watch.get(current)) !== (last = watch.last) &amp;&amp;
+                    !(watch.eq
+                        ? equals(value, last)
+                        : (typeof value === &apos;number&apos; &amp;&amp; typeof last === &apos;number&apos;
+                           &amp;&amp; isNaN(value) &amp;&amp; isNaN(last)))) {
+
+                  dirty = true; //标记dirty为true
+                  lastDirtyWatch = watch;
+                  watch.last = watch.eq ? copy(value, null) : value;
+                  watch.fn(value, ((last === initWatchVal) ? value : last), current);
+                  ....
+                } else if (watch === lastDirtyWatch) {
+                  dirty = false;
+                  break traverseScopesLoop;
+                }
+              }
+            } catch (e) {
+              $exceptionHandler(e);
+            }
+          }
+        }
+        ...
+        //这里是为了对子Scope继续进行检查
+        if (!(next = ((current.$$watchersCount &amp;&amp; current.$$childHead) ||
+            (current !== target &amp;&amp; current.$$nextSibling)))) {
+          while (current !== target &amp;&amp; !(next = current.$$nextSibling)) {
+            current = current.$parent;
+          }
+        }
+
+      } while ((current = next));
+
+        ...
+
+    } while (dirty || asyncQueue.length);
+    ...
+｝
+</code></pre><p>$digest方法会执行一个while(dirty == true)的循环，首先将dirty标记为false，检查Scope中的所有watcher，一旦发现值发生改变了，就将dirty标记为true，并调用相应的回调函数来更新页面上的值；一轮检查完成后，会重新进入while(dirty == true)再次进行检查，直到dirty为false代表页面已经稳定下来，不再有数据发生更改，脏检查结束。</p>
+<p>那么，什么情况下会进入$diget循环呢，这就得看看$apply中的内容:</p>
+<pre><code>$apply: function(expr) {
+    try {
+      beginPhase(&apos;$apply&apos;);
+      return this.$eval(expr);
+    } catch (e) {
+      $exceptionHandler(e);
+    } finally {
+      clearPhase();
+      try {
+        $rootScope.$digest();
+      } catch (e) {
+        $exceptionHandler(e);
+        throw e;
+      }
+    }
+  }
+</code></pre><p>$apply方法中虽然有多个try catch，但根据finally关键字可以看出它最终会执行$rootScope.$digest,值得注意的是，AngularJS的脏检查总是从$rootScope开始，逐级进行检查。</p>
+<h4 id="三-View-Model的更新"><a href="#三-View-Model的更新" class="headerlink" title="三.View-Model的更新"></a>三.View-Model的更新</h4><p>AngularJS使用脏检查机制来实现从Model到View的更新，那么，我们一定会好奇，watcher是什么时候被添加的，还有View的数据又是怎么更新到Model的呢？</p>
+<p>先看下面一段代码：</p>
+<pre><code>&lt;input ng-model=&quot;value&quot;&gt;&lt;/input&gt;
+&lt;span ng-bind=&quot;value&quot;&gt;&lt;/span&gt;
+</code></pre><p>这是一段基本的反映双向数据绑定的代码，当我们在input中输入值时，value的更新会得到更新，而更新会反映到span标签中，在基于选择器的jQuery中，我们必须选中这两个标签来手动刷新对应的值。</p>
+<p>我们知道，Angular定义了大量的默认指令，而这里除了ngModel和ngBind外，事实上还存在一条指令，即标签指令input，我们可以在angular的预处理中找到这样一段代码：</p>
+<pre><code>$provide.provider(&apos;$compile&apos;, $CompileProvider).
+    directive({
+        ...
+        input: inputDirective,
+        ...
+    })
+</code></pre><p>通过追寻inputDirective，我们可以一直找到对所有表单元素进行基本处理的一个函数baseInputType，在baseInputType中，发现了如下处理：</p>
+<pre><code>if ($sniffer.hasEvent(&apos;input&apos;)) {
+    element.on(&apos;input&apos;, listener);
+  }
+
+  element.on(&apos;change&apos;, listener);
+</code></pre><p>也就是说，inputDirective给元素添加了input事件和change事件的监听器，一旦我们有所输入时，就会调用回调函数listener,而listener中则会调用$apply正式触发$digest循环进行脏检查。</p>
+<p>那么，上文所说的watcher又是在什么时候被添加的呢？我们可以看看ngBind指令的定义：</p>
+<pre><code>var ngBindDirective = [&apos;$compile&apos;, function($compile) {
+          return {
+            restrict: &apos;AC&apos;,
+            compile: function ngBindCompile(templateElement) {
+                  $compile.$$addBindingClass(templateElement);
+                  return function ngBindLink(scope, element, attr) {
+                       $compile.$$addBindingInfo(element, attr.ngBind);
+                      element = element[0];
+                      scope.$watch(attr.ngBind,function ngBindWatchAction(value) {
+                          element.textContent = value === undefined ? &apos;&apos; : value;
+                    });
+                  };
+            }
+          };
+}];
+</code></pre><p>可以看到，ngBind指令会调用scope.$watch方法来将数据加入到监听器队列中，此外，我们使用的表达式形式同样也会调用$watch方法。</p>
 
                 </p>
             </div>
