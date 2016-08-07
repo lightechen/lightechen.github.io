@@ -78,9 +78,9 @@
         <div class="row">
             <div class="col-md-12">
                 <p class="post-meta">
-                    2016-04-17
+                    2016-03-11
                 </p>
-                <a href="/2016/04/17/浅谈jQuery中的defer对象/">
+                <a href="/2016/03/11/浅谈jQuery中的defer对象/">
                     <h2 class="post-title">
                         浅谈jQuery中的defer对象
                     </h2>
@@ -271,6 +271,50 @@ fire: function() {
 </code></pre><p>主要逻辑在中间的for循环，它从firingIndex指定位置遍历了目前的函数队列，并通过apply调用函数，stopOnFalse作为选项为真时，一旦函数返回false就跳出循环。</p>
 <p>以上是jQuery对add和fire的实现逻辑，当然Callback对象还有各种各样的选项和方法，在这里由于篇幅有限就不再赘述。</p>
 <h4 id="jQuery中defer对象的实现"><a href="#jQuery中defer对象的实现" class="headerlink" title="jQuery中defer对象的实现"></a>jQuery中defer对象的实现</h4><p>在了解上述部分后，我们就可以正式解读defer对象的实现部分</p>
+<p>事实上,jQuery的defer对象就是由callback对象所生成的实例，我们可以在defer对象的构造器中找到这样的代码：</p>
+<pre><code>var tuples = [
+            // action, add listener, listener list, final state
+            [ &quot;resolve&quot;, &quot;done&quot;, jQuery.Callbacks(&quot;once memory&quot;), &quot;resolved&quot; ],
+            [ &quot;reject&quot;, &quot;fail&quot;, jQuery.Callbacks(&quot;once memory&quot;), &quot;rejected&quot; ],
+            [ &quot;notify&quot;, &quot;progress&quot;, jQuery.Callbacks(&quot;memory&quot;) ]
+        ],
+        state = &quot;pending&quot;,
+        promise = {
+            state: {
+                ...
+            },
+            always: {
+                ...
+            }                        
+</code></pre><p>jQuery通过遍历tuples数组来生成不同状态的promise对象，其代码如下：</p>
+<pre><code>jQuery.each( tuples, function( i, tuple ) {
+        //list: 回调对象
+        var list = tuple[ 2 ],
+            stateString = tuple[ 3 ];
+
+        // promise[ done | fail | progress ] = list.add
+        promise[ tuple[1] ] = list.add;
+
+        // Handle state
+        // 执行完方法后处理状态
+        if ( stateString ) {
+            list.add(function() {
+                // state = [ resolved | rejected ]
+                state = stateString;
+
+            // [ reject_list | resolve_list ].disable; progress_list.lock
+            }, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
+        }
+
+        // deferred[ resolve | reject | notify ]
+        deferred[ tuple[0] ] = function() {
+            deferred[ tuple[0] + &quot;With&quot; ]( this === deferred ? promise : this, arguments );
+            return this;
+        };
+        deferred[ tuple[0] + &quot;With&quot; ] = list.fireWith;
+    });
+</code></pre><p>可以看出，对于resolved和rejected等几种不同的状态有着不同的callback对象，比如resloved状态的resolve方法指向其对应callback对象的fireWith方法，而done方法则指向callback对象的add方法，构造器最后返回该defer对象，以供我们进行调用。</p>
+<p>本文简要描述了jQuery defer对象的原理，当然，关于defer对象还有很多巧妙的细节，由于篇幅原因不再描述，我会继续对其进行探索。</p>
 
                 </p>
             </div>

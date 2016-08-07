@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="AngularJS的双向数据绑定可以说解决了前端开发的一个痛点，当绑定内存数据发生更新时我们不需要再手动逐个更新View层面的数据，节省了大量的代码量，同时，这也是MVVM模式能够流行起来的基础。习惯了数据绑定的开发模式后再回去看手动使用选择器更新数据的流程就会显得繁琐很多。
+由于在公司需要做一个前">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="John Doe">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="关于AngularJS的双向数据绑定"/>
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Hexo"/>
+
+    <!--Page Cover-->
+    
+        <meta property="og:image" content="undefined"/>
+    
+
+    <!-- Title -->
+    
+    <title>关于AngularJS的双向数据绑定 - Hexo</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
+        <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
+    <!--<![endif]&ndash;&gt;-->
+
+</head>
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<div class="sidebar">
+    <div class="profile">
+        <a href="/">
+            <img src="/img/profile.jpg"></img>
+        </a>
+        <span>Light</span>
+    </div>
+
+    <ul class="menu">
+        <li><span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页</li>
+        <li><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>归档</li>
+        <li><span class="glyphicon glyphicon-tags" aria-hidden="true"></span>标签</li>
+        <li><span class="glyphicon glyphicon-user" aria-hidden="true"></span>关于</li>
+    </ul>
+</div>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header">
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="post-meta">
+                    2016-02-04
+                </p>
+                <a href="/2016/02/04/关于AngularJS的双向数据绑定/">
+                    <h2 class="post-title">
+                        关于AngularJS的双向数据绑定
+                    </h2>
+                </a>
+
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container main content">
+        <div class="row">
+
+            <!-- Post Main Content -->
+            <div class="col-md-12">
+                <p class="post-content">
+                    <p>AngularJS的双向数据绑定可以说解决了前端开发的一个痛点，当绑定内存数据发生更新时我们不需要再手动逐个更新View层面的数据，节省了大量的代码量，同时，这也是MVVM模式能够流行起来的基础。习惯了数据绑定的开发模式后再回去看手动使用选择器更新数据的流程就会显得繁琐很多。</p>
+<p>由于在公司需要做一个前端session,选了AngularJS双向数据绑定的题目，在这里简要记录一下分享流程。</p>
+<h4 id="一-什么是双向数据绑定"><a href="#一-什么是双向数据绑定" class="headerlink" title="一.什么是双向数据绑定"></a>一.什么是双向数据绑定</h4><p>在了解什么是双向数据绑定之前，我们首先要先明白什么是单向数据绑定。传统的WEB前端开发进行开发时，如果需要对HTML进行模板化，一般先由我们将模板写好，然后和数据一起整合成HTML代码，再将这些代码插入到文档中。</p>
+<p><img src="/img/单向数据绑定.png" alt="Alt text"></p>
+<p>单向数据绑定的缺点是HTML代码一旦生成之后就难以修改，如果数据发生更改，我们不得不重新渲染整段HTML代码。单向数据绑定经常借由形如下面的形式实现：</p>
+<pre><code>var html = &apos;&lt;h1&gt;&apos; + data + &lt;/h1&gt;;
+document.getElementById(&apos;#container&apos;).innerHtml = html;
+</code></pre><p>由于单向数据绑定的局限性，就有了更为便捷的双向数据绑定，也就是所谓的MVVM（Model-View-View-Model）模式。双向数据绑定的特点就是一旦数据模型发生了变化，相对应的视图也会跟着更新，而视图数据的更新也会相对应地更新到模型中去。这样一来，我们就省下了单向数据绑定时大量的CRUD操作。</p>
+<p><img src="/img/双向数据绑定.png" alt="Alt text"></p>
+
+                </p>
+            </div>
+
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdn.rawgit.com/noelboss/featherlight/1.3.5/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+</body>
+
+</html>
