@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="相信凡是接触过编程的人对函数这个概念必然不会陌生，几乎所有的编程语言都会引入函数这个概念，而函数的实质就是封装一丢执行流程的组合，方便我们在各处进行调用，在面向对象没有出现之前，函数式编程曾经是主流的编程模式。
+由于需要在团队做一个有关Javascript函数的分享，顺便就整理了一些内容记录下来。J">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Light">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="说说Javascript函数"/>
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Light&#39;s Blog"/>
+
+    <!--Page Cover-->
+    
+        <meta property="og:image" content="undefined"/>
+    
+
+    <!-- Title -->
+    
+    <title>说说Javascript函数 - Light&#39;s Blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
+        <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
+    <!--<![endif]&ndash;&gt;-->
+
+</head>
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<div class="sidebar">
+    <div class="profile">
+        <a href="/">
+            <img src="/img/profile.jpg"></img>
+        </a>
+        <span>Light</span>
+    </div>
+
+    <ul class="menu">
+        <li><span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页</li>
+        <li><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>归档</li>
+        <li><span class="glyphicon glyphicon-tags" aria-hidden="true"></span>标签</li>
+        <li><span class="glyphicon glyphicon-user" aria-hidden="true"></span>关于</li>
+    </ul>
+</div>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header">
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="post-meta">
+                    2015-11-12
+                </p>
+                <a href="/2015/11/12/说说Javascript函数/">
+                    <h2 class="post-title">
+                        说说Javascript函数
+                    </h2>
+                </a>
+
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container main content">
+        <div class="row">
+
+            <!-- Post Main Content -->
+            <div class="col-md-12">
+                <p class="post-content">
+                    <p>相信凡是接触过编程的人对函数这个概念必然不会陌生，几乎所有的编程语言都会引入函数这个概念，而函数的实质就是封装一丢执行流程的组合，方便我们在各处进行调用，在面向对象没有出现之前，函数式编程曾经是主流的编程模式。</p>
+<p>由于需要在团队做一个有关Javascript函数的分享，顺便就整理了一些内容记录下来。Javascript的函数是我们在coding时不可避免的工具，然而我们很少会去追本溯源地挖掘函数究竟是什么？事实上，就好像一个组装好的玩具，如果不将其拆开，似乎也能玩得得心应手，但却总觉得少了些什么，不如拆拆看，说不定会有有趣的发现。</p>
+<h4 id="一-Javascript函数到底是什么？"><a href="#一-Javascript函数到底是什么？" class="headerlink" title="一.Javascript函数到底是什么？"></a>一.Javascript函数到底是什么？</h4><p>关于Javascript函数到底是什么，《Javascript高级程序设计》给出了定义————函数是对象，函数名是指针。是的，函数是对象，但它似乎与我们平常所见的Javascript对象有着诸多不同，比如：</p>
+<pre><code>function foo(num1, num2){
+    return num1 + num2;
+}
+console.log(typeof foo); //&apos;function&apos;
+</code></pre><p>对函数使用typeof，会单独打印出function，除此以外，函数还有诸多奇怪之处。但不管怎么样，这并不影响函数是对象的事实，我们知道，Javascript的所有对象都存在一个构造器，而函数的构造器就是Function，观察如下代码：</p>
+<pre><code>var foo = new Function(&quot;num1&quot;, &quot;num2&quot;, &quot;return num1 + num2&quot;);
+console.log(foo(1, 2)); //&apos;3&apos;
+</code></pre><p>使用new + 构造函数的方式创建对象，这和我们平常所见到的创建对象的方式并没有什么两样，事实上，尽管我们并不推荐使用这种方法创建函数，但不论是用函数声明还是函数表达式都必然会经过这个过程，这对于我们理解函数是对象，函数名是指针有着重要意义。</p>
+<h4 id="二-Javascript函数里有什么？"><a href="#二-Javascript函数里有什么？" class="headerlink" title="二.Javascript函数里有什么？"></a>二.Javascript函数里有什么？</h4><p>那么，既然知道了函数是对象，我们就会想是否可以用研究对象的方式去研究函数。Javascript的对象是属性和方法的集合，函数是对象，那函数必然也会拥有自身的属性与方法。一般来说，要查看一个对象有哪些属性与方法，通过console.log()打印在chrome控制台上似乎是不错的选择：</p>
+<pre><code>function foo(num1, num2){
+    return num1 + num2;
+}
+console.log(foo); // ?
+</code></pre><p>然而，事实真的是这样么？似乎不是，通过console.log()打印出来的是一串文本，而文本的内容正是我们所写的函数代码。<br>为什么会这样呢？<br>这是函数的一个特殊性，console.log在打印是，会判断参数是否是function类型，如果是，就会调用其toString方法将其转换为字符串进行打印。为了证明这一点，我们可以尝试重写toString方法：</p>
+<pre><code>function foo(num1, num2){
+    return num1 + num2;
+}
+foo.toString = function(){
+    return &apos;string&apos;;
+}
+
+console.log(foo); // &apos;function string&apos;
+</code></pre><p>那么，使用console.log观察的方法似乎不可行了，这时候，我们换种思路，想想Javascript是否提供遍历属性的方法？答案是肯定的，我们想到了in:</p>
+<pre><code>for(var attr in foo) {
+    console.log(attr);
+}
+</code></pre><p>然而，结果也不尽人意，什么都没有打印出来，为什么呢？<br>Javascript的所有对象属性都存在一些特性，其中有一项决定这个属性是否可枚举，我们可以通过Object的一个方法来监测函数的一项属性：</p>
+<pre><code>console.log(Object.propertyIsEnumerable(f.length)); //false
+</code></pre><p>由此可以推断，函数的所有属性应该都是不可枚举的，那么问题来了，我们该如何研究函数的属性呢？</p>
+<p>事实上，console.log虽然会对传入的函数调用toString方法，但如果传入的是普通对象，那它的结果就一目了然了，所以我们可以将函数作为某个对象的方法，通过打印这个对象进行观察：</p>
+<pre><code>console.log(foo.prototype);  //观察constructor
+</code></pre><p>我们知道，所有的函数都存在prototype属性，而prototype对象的constructor属性在没做过任何更改的情况下默认指向的就是函数本身。通过打印foo.prototype,我们可以清楚地看到函数的结构。</p>
+<p>函数自身包含四个属性：arguments,caller,length,name。</p>
+<p>先说说arguments,arguments存储的是函数的参数，它提供一个类数组的结构，并且只有在运行时生成：</p>
+<pre><code>function foo(num1, num2){
+    console.log(foo.arguments[0]); // 1
+    return num1 + num2;
+}
+
+foo(1, 2);
+</code></pre><p>可以看出，arguments似乎和数组非常相似，那么，它真的是数组么？可以通过instanceof来检查看看：</p>
+<pre><code>console.log(foo.arguments instanceof Array); //false
+</code></pre><p>答案是否定的，虽然arguments在结构上和数组一样，但它并不是由Array构造器生成，所以也不具备数组对象的任何方法，然而，在一般的使用过程中，我们可以将其转换成数组：</p>
+<pre><code>var arr = Array.prototype.slice.call(arguments);
+</code></pre><p>通过对arguments调用数组的slice方法，可以返回一个新的数组对象，这个数组对象包含arguments的所有成员，并具备数组的所有方法和特性。</p>
+<p>arguments还有一个有趣的地方，就是它的自动更新：</p>
+<pre><code>function foo(num1, num2){
+    console.log(foo.arguments[0]); // 1
+    num1 = 2;
+    console.log(foo.arguments[0]); // 2
+    return num1 + num2;
+}
+
+foo(1, 2);
+</code></pre><p>对num1的修改会影响到arguments[0]的值，反过来，修改arguments[0]的值同样也会影响到num1，可以看出它们是互相绑定的。令人诧异的是，这种自动更新在严格模式下却不会生效：</p>
+<pre><code>‘use strict’;
+
+function foo(num1, num2){
+    console.log(foo.arguments[0]); // 1
+    num1 = 2;
+    console.log(foo.arguments[0]); // 1
+    return num1 + num2;
+}
+
+foo(1, 2);
+</code></pre><p>严格模式下的arguments不会创建自身的get与set,这也是值得我们注意的一点。</p>
+<p>再来看看caller，caller是我们平常比较少见的一个属性，事实上，它仅仅是对父函数的一个引用，可以看下如下代码：</p>
+<pre><code>function foo(num1, num2){
+    console.log(foo.caller); //father函数的字符串形式
+    return num1 + num2;
+}
+function father(){
+    foo(1, 2);
+}
+
+father();
+</code></pre><p>值得注意的是，如果是在全局环境下调用的函数，其caller为null：</p>
+<pre><code>function foo(num1, num2){
+    console.log(foo.caller); //null
+    return num1 + num2;
+}
+
+foo(1, 2);
+</code></pre><p>另外，caller和arguments一样，也是在运行时生成的，在函数没有运行的情况下都为null。</p>
+<p>然后，我们来看看name属性，其实故名思义，name属性保存的就是函数的名字，事实上，我们在用函数声明定义函数的时候：</p>
+<pre><code>function foo(num1, num2){
+    return num1 + num2;
+}
+</code></pre><p>一方面，Javascript创建了一个函数对象，并将foo赋予该对象的name属性，另一方面，生成了一个名为foo的变量，并将其指向该函数。</p>
+<p>而且，Javascript可以创建匿名函数，匿名函数的name值就是””。</p>
+<pre><code>console.log(function(){}.name); // &quot;&quot;
+</code></pre><p>最后来讲讲length,length保存的是Javascript函数的参数数量，和arguments.length不同的是，这里的参数数量由定义的时候决定的，不会随着参数的增加而增加，通过下面这段代码可以感受一下：</p>
+<pre><code>function foo(num1, num2){
+    console.log(foo.arguments.length); // 3
+    console.log(foo.length); // 2
+    return num1 + num2;
+}
+
+foo(1, 2, 3);    
+</code></pre><p>除了这些属性之外，函数对象的<strong>proto</strong>还提供一些方法，我们知道，对象的<strong>proto</strong>指向的是其构造器的prototype属性，也就是说，这些方法都定义在Function.prototype中。</p>
+<p>比较常用的是call和apply，这两个方法主要负责绑定函数运行时的this对象：</p>
+<pre><code>var obj = {
+    &apos;a&apos; : 1,
+    &apos;b&apos; : 2
+ }
+
+function foo(num1, num2) {
+    this.a = num1;
+    this.b = num2;
+}
+
+foo.call(obj, 2, 3);
+console.log(obj); // {&apos;a&apos;: 2, &apos;b&apos;: 3}
+foo.apply(obj, [4, 5]);
+console.log(obj); // {&apos;a&apos;: 4, &apos;b&apos;: 5}
+</code></pre><p>call和apply的主要区别就是传参的方式有所不同，apply是将参数作为数组的形式传入，而call则是将参数逐个传入。</p>
+<p>除了call和apply外，ECMAScript 5提供的bind也可以改变函数的this:</p>
+<pre><code>var obj = {
+    &apos;a&apos; : 1,
+    &apos;b&apos; : 2
+ }
+
+function foo(num1, num2) {
+    this.a = num1;
+    this.b = num2;
+}
+
+var goo = foo.bind(obj);
+
+goo(2, 3);
+
+console.log(obj); // {&apos;a&apos;: 2, &apos;b&apos;: 3}
+</code></pre><p>另外之前提过，函数还带有toString方法可以返回函数的代码，这里就不在赘述。</p>
+<p>本文主要通过解剖的方式分析了Javascript函数对象的种种，当然，对函数的研究还远不止于此，接下来我会在其他文章中逐一描述。</p>
+
+                </p>
+            </div>
+
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdn.rawgit.com/noelboss/featherlight/1.3.5/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+</body>
+
+</html>

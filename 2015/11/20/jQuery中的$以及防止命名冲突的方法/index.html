@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jQuery中的$一直是频频出现却又带有一丝神秘的符号，相信凡是使用过jQuery的前端er们对这个符号一定不陌生，然而当谈到它究竟是什么，就未必人人都答得上来了，最可怕的是一些有两三年前端开发经验的同学谈到这个问题也是一脸懵，其实，只要找时间稍微分析下jQuery的源码就可以明白。jQuery带给">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Light">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="jQuery中的$以及防止命名冲突的方法"/>
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Light&#39;s Blog"/>
+
+    <!--Page Cover-->
+    
+        <meta property="og:image" content="undefined"/>
+    
+
+    <!-- Title -->
+    
+    <title>jQuery中的$以及防止命名冲突的方法 - Light&#39;s Blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
+        <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
+    <!--<![endif]&ndash;&gt;-->
+
+</head>
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<div class="sidebar">
+    <div class="profile">
+        <a href="/">
+            <img src="/img/profile.jpg"></img>
+        </a>
+        <span>Light</span>
+    </div>
+
+    <ul class="menu">
+        <li><span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页</li>
+        <li><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>归档</li>
+        <li><span class="glyphicon glyphicon-tags" aria-hidden="true"></span>标签</li>
+        <li><span class="glyphicon glyphicon-user" aria-hidden="true"></span>关于</li>
+    </ul>
+</div>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header">
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="post-meta">
+                    2015-11-20
+                </p>
+                <a href="/2015/11/20/jQuery中的$以及防止命名冲突的方法/">
+                    <h2 class="post-title">
+                        jQuery中的$以及防止命名冲突的方法
+                    </h2>
+                </a>
+
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container main content">
+        <div class="row">
+
+            <!-- Post Main Content -->
+            <div class="col-md-12">
+                <p class="post-content">
+                    <p>jQuery中的$一直是频频出现却又带有一丝神秘的符号，相信凡是使用过jQuery的前端er们对这个符号一定不陌生，然而当谈到它究竟是什么，就未必人人都答得上来了，最可怕的是一些有两三年前端开发经验的同学谈到这个问题也是一脸懵，其实，只要找时间稍微分析下jQuery的源码就可以明白。jQuery带给我们太多的便利性，以致于我们太少去追究它内部的实现原理。</p>
+<h4 id="一-到底是什么？"><a href="#一-到底是什么？" class="headerlink" title="一. $到底是什么？"></a>一. $到底是什么？</h4><p>首先，我们先看jQuery如何开始运行，打开jQuery 2.0.3的源码，我们可以看到这样一个结构：</p>
+<pre><code>(function( window, undefined ) {
+     ...
+})( window );
+</code></pre><p>可见，jQuery通过一个匿名函数自执行将所有局部变量全保存在改匿名函数的作用域中，防止与外部的命名冲突，同时将window作为参数传入。事实上，即使不将window传入，函数内部应该也可以通过作用域链查找到window,jQuery这么做将window保存成局部变量，一方面方便压缩，一方面也加快了查找速度，足见代码的精致。</p>
+<p>那么，$到底是什么呢？我们搜索一下，就可以在底部发现如下代码：</p>
+<pre><code>if ( typeof window === &quot;object&quot; &amp;&amp; typeof window.document === &quot;object&quot; ) {
+    window.jQuery = window.$ = jQuery;
+}
+</code></pre><p>这句话首先对window和window.document是否是object作了判断，事实上，只要在浏览器环境下这个判断一定成立，那么就将window.jQuery和window.$都赋值jQuery，这里的jQuery是该匿名函数的局部变量，也就是说，我们在外部使用的$和jQuery都指向这个局部对象，所以接下来，我们只要找到这个局部对象是什么就好了。</p>
+<p>继续查找，就可以成功在头部找到jQuery的定义：</p>
+<pre><code>//所有的jQuery对象都在这里定义
+jQuery = function( selector, context ) {
+    // The jQuery object is actually just the init constructor &apos;enhanced&apos;
+    //返回jQuery对象
+    return new jQuery.fn.init( selector, context, rootjQuery );
+},
+</code></pre><p>从这里可以看到，jQuery是一个function，所以我们平时在使用的时候基本都是通过$(‘…’)的方式来调用，而它返回的是以jQuery.fn.init为构造器的对象。</p>
+<p>所以我们继续查找，可以找到jQuery.fn的定义：</p>
+<pre><code>// 省去了初始化步骤
+jQuery.fn = jQuery.prototype = {
+    ...
+    init: function() {
+        ...
+    }
+    ...
+｝
+</code></pre><p>jQuery.fn指向的是jQuery.prototype, 也就是说，当我们使用$()时，返回的是以jQuery.prototype.init为构造器的对象，这么做的好处我们不需要再自己使用new来新建jQuery对象，jQuery帮我们做了这一过程。</p>
+<p>那么问题来了，我们日常会常常用到jQuery对象的一些方法，比如css,attr,each等等，而这些方法一般都存在jQuery.fn,也就是jQuery.prototype中，而jQuery对象的构造器又是jQuery.prototype.init，那么，通过这个构造器构造的对象是如何找到jQuery.prototype中的方法的呢？其实只是很简单的一句：</p>
+<pre><code>jQuery.fn.init.prototype = jQuery.fn;
+</code></pre><p>这句话将jQuery.fn.init.prototype指向jQuery.fn，也就是jQuery.prototype，这样，在jQuery.prototype中扩展方法也就是在jQuery.fn.init.prototype中扩展，那么自然以jQuery.fn.init为构造器的对象可以使用这些方法了。</p>
+<h4 id="二-如何避免-的命名冲突？"><a href="#二-如何避免-的命名冲突？" class="headerlink" title="二. 如何避免$的命名冲突？"></a>二. 如何避免$的命名冲突？</h4><p>$对于jQuery来说至关重要，然而，它并不是jQuery独占的符号，也就是说，其他的框架也可以运用$，当我们同时使用时，难免会发生冲突。jQuery的开发者们当然想到了这一点，也就提供了避免冲突的方案。</p>
+<pre><code>var $ = “other frame”;
+
+// 引入jQuery....
+
+var _jQuery = $.noConflict();
+
+_jQuery(function(){
+    console.log($);
+});
+</code></pre><p>上述代码中我们用“other frame”占用了$符号，然后引入了jQuery，这样，jQuery会占用$，我们就找不到原来的框架了，这种情况下就需要先调用$.noConflict避开冲突。</p>
+<p>$.noConflict的原理是什么呢，我们可以看下，在jQuery初始化的时候有这样一段代码，</p>
+<pre><code>// Map over jQuery in case of overwrite
+_jQuery = window.jQuery,
+
+// Map over the $ in case of overwrite
+_$ = window.$,
+</code></pre><p>这里jQuery缓存了下window.$对象，这样一旦我们在之前引入过占用$的框架，就会被缓存到_$中，然后我们再看$.noConflict:</p>
+<pre><code>//防止冲突
+noConflict: function( deep ) {
+
+    //防止其他库也用到$代表jQuery
+    //当deep为true时, jQuery放弃$
+    if ( window.$ === jQuery ) {
+        window.$ = _$;
+    }
+
+    if ( deep &amp;&amp; window.jQuery === jQuery ) {
+        window.jQuery = _jQuery;
+    }
+
+    return jQuery;
+},
+</code></pre><p>noConflict其实只是然jQuery放弃了对$的占用，将$还给了缓存在_$中的原框架对象，最后返回jQuery，这样，我们相当于给jQuery起了一个别名，可以通过这个别名来使用jQuery。</p>
+<p>以上就是对$的理解以及防冲突的原理，今后有时间还会继续解析jQuery的内部细节，继续加油！！</p>
+
+                </p>
+            </div>
+
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdn.rawgit.com/noelboss/featherlight/1.3.5/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+</body>
+
+</html>

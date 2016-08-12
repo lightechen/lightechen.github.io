@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="CSS3的提出使得CSS不再是单纯的样式表，只要运用得到，就可以实现一些我们很棒的动画效果，最近项目有需求需要实现一个环形进度条，一开始没有思路，在看了《CSS Secret》之后觉得有受启发，便记录下这个过程。在过去，实现一个这样的进度条难免要拼接大量图片，CSS3和HTML5的出现使得这个过程变">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Light">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="来自CSS3的黑科技－－如何实现环形进度条"/>
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Light&#39;s Blog"/>
+
+    <!--Page Cover-->
+    
+        <meta property="og:image" content="undefined"/>
+    
+
+    <!-- Title -->
+    
+    <title>来自CSS3的黑科技－－如何实现环形进度条 - Light&#39;s Blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
+        <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
+    <!--<![endif]&ndash;&gt;-->
+
+</head>
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<div class="sidebar">
+    <div class="profile">
+        <a href="/">
+            <img src="/img/profile.jpg"></img>
+        </a>
+        <span>Light</span>
+    </div>
+
+    <ul class="menu">
+        <li><span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页</li>
+        <li><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>归档</li>
+        <li><span class="glyphicon glyphicon-tags" aria-hidden="true"></span>标签</li>
+        <li><span class="glyphicon glyphicon-user" aria-hidden="true"></span>关于</li>
+    </ul>
+</div>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header">
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="post-meta">
+                    2015-10-11
+                </p>
+                <a href="/2015/10/11/来自CSS3的黑科技－－如何实现环形进度条/">
+                    <h2 class="post-title">
+                        来自CSS3的黑科技－－如何实现环形进度条
+                    </h2>
+                </a>
+
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container main content">
+        <div class="row">
+
+            <!-- Post Main Content -->
+            <div class="col-md-12">
+                <p class="post-content">
+                    <p>CSS3的提出使得CSS不再是单纯的样式表，只要运用得到，就可以实现一些我们很棒的动画效果，最近项目有需求需要实现一个环形进度条，一开始没有思路，在看了《CSS Secret》之后觉得有受启发，便记录下这个过程。在过去，实现一个这样的进度条难免要拼接大量图片，CSS3和HTML5的出现使得这个过程变得简单无比。</p>
+<p>首先，我们需要一个元素来承载我们的样式：</p>
+<pre><code>&lt;div class=&quot;pie&quot;&gt;&lt;/div&gt;
+</code></pre><p>事实上，如果要实现环形图，只要实现饼图，然后在其上覆盖一层遮罩即可，所以我们可以先从如何实现饼图开始：</p>
+<pre><code>.pie {
+    width : 200px;
+    height : 200px;
+    border-radius: 50%;
+    background: #ddd;
+    margin: 0 auto;
+    position: relative;
+}
+</code></pre><p>我们首先通过.pie实现了一个圆形，并将其居中方便我们进行观察，效果如下：</p>
+<p><img src="/img/circle-step-1.png" alt="alt text" title="Title">    </p>
+<p>我们需要用蓝色来代表饼图的比例，《CSS Secret》给出的思路是覆盖一层与背景同色的伪元素上去，使其旋转露出比例的部分，那么首先，需要将圆形另一半的背景色置为蓝色，可以通过线性渐变来实现：</p>
+<pre><code>background-image: linear-gradient(to right, transparent 50%, #3195d0 0);
+</code></pre><p>效果如下：<br><img src="/img/circle-step-2.png" alt="alt text" title="Title">    </p>
+<p>然后，我们通过伪元素::before添加一层遮罩，使其遮挡住右半部分：</p>
+<pre><code>.pie::before {
+    content: &apos;&apos;;
+    display: block;
+    margin-left: 50%;
+    height: 100%;
+    background-color: inherit;
+    border-radius: 0 100% 100% 0 / 50%;    
+｝
+</code></pre><p>伪元素的宽度为圆的一半，并位于右边遮挡住右半部分，当然，仅仅是这样还不够，这里的关键是设置border-radius使其呈现半圆形，border-radius通过/分隔四个角的水平半径和垂直半径。<br>这时候，我们通过transform可以使伪元素发生旋转，露出想要的比例：</p>
+<pre><code>transform-origin: left;
+transform: rotate(.1turn);
+</code></pre><p>效果如下：<br><img src="/img/circle-step-3.png" alt="alt text" title="Title"></p>
+<p>已经离我们想要的越来越接近了，为了让饼图可以动起来，我们可以通过CSS3的animation来实现:</p>
+<pre><code>@keyframes spin {
+    to {
+        transform: rotate(.5turn);
+    }
+}
+
+@keyframes bg {
+    50% {
+        background: #3195d0;
+    }
+}
+
+.pie::before {
+    content: &apos;&apos;;
+    display: block;
+    margin-left: 50%;
+    height: 100%;
+    background-color: inherit;
+    border-radius: 0 100% 100% 0 / 50%;
+    transform-origin: left;
+    transform: rotate(.1turn);
+    animation: spin 10s linear infinite,
+               bg 20s step-end infinite;
+}
+</code></pre><p>注意，@keyframes bg的作用是当饼图旋转到一半时应该更换背景颜色，才能达到我们想要的效果，最后，我们再通过::after添加一层伪元素，使圆环看上去有空心的效果：</p>
+<pre><code>.pie::after {
+    content: &apos;&apos;;
+    display: block;
+    height: 80%;
+    width: 80%;
+    position: absolute;
+    z-index: 1;
+    top: 10%;
+    left: 10%;
+    background-color: #fff;
+    border-radius: 50%;
+}
+</code></pre><p>最后的效果如下：<br><img src="/img/circle-step-4.png" alt="alt text" title="Title"></p>
+<p>如此就实现了一个简单的圆环，当然，你可以配合JS来添加一些交互，在这里安利一波《CSS Secret》，充满着CSS3黑科技的好书，据说中文版目前还没有人在翻译。</p>
+
+                </p>
+            </div>
+
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdn.rawgit.com/noelboss/featherlight/1.3.5/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+</body>
+
+</html>

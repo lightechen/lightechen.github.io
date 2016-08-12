@@ -101,3 +101,6 @@ a img:focus {
   padding-left: 150px;
   padding-top: 25px;
 }
+.img {
+  width: 100%;
+}

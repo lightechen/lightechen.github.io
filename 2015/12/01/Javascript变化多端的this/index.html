@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="Javasctipt有着很多诡异莫测的行为，其中函数的this指针就是尝尝会困扰初学者的一个问题，因为它的变化多端，我们经常会搞不明白this指向的到底是什么。其实关于this的问题，《你不知道的Javascript》做出了相当完美的总结，为了不忘，在这里整理记录下来。
+一. 函数的调用模式关于函数">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Light">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Javascript变化多端的this"/>
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Light&#39;s Blog"/>
+
+    <!--Page Cover-->
+    
+        <meta property="og:image" content="undefined"/>
+    
+
+    <!-- Title -->
+    
+    <title>Javascript变化多端的this - Light&#39;s Blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
+        <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
+    <!--<![endif]&ndash;&gt;-->
+
+</head>
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<div class="sidebar">
+    <div class="profile">
+        <a href="/">
+            <img src="/img/profile.jpg"></img>
+        </a>
+        <span>Light</span>
+    </div>
+
+    <ul class="menu">
+        <li><span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页</li>
+        <li><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>归档</li>
+        <li><span class="glyphicon glyphicon-tags" aria-hidden="true"></span>标签</li>
+        <li><span class="glyphicon glyphicon-user" aria-hidden="true"></span>关于</li>
+    </ul>
+</div>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header">
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="post-meta">
+                    2015-12-01
+                </p>
+                <a href="/2015/12/01/Javascript变化多端的this/">
+                    <h2 class="post-title">
+                        Javascript变化多端的this
+                    </h2>
+                </a>
+
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container main content">
+        <div class="row">
+
+            <!-- Post Main Content -->
+            <div class="col-md-12">
+                <p class="post-content">
+                    <p>Javasctipt有着很多诡异莫测的行为，其中函数的this指针就是尝尝会困扰初学者的一个问题，因为它的变化多端，我们经常会搞不明白this指向的到底是什么。其实关于this的问题，《你不知道的Javascript》做出了相当完美的总结，为了不忘，在这里整理记录下来。</p>
+<h4 id="一-函数的调用模式"><a href="#一-函数的调用模式" class="headerlink" title="一. 函数的调用模式"></a>一. 函数的调用模式</h4><p>关于函数，Javascript有着4种不同调用模式，而这几种不同的调用模式下，this的绑定方式也不一样，分别是默认绑定，显式绑定，隐式绑定，new绑定。</p>
+<p>首先我们来看看默认绑定：</p>
+<pre><code>var a = 12;
+function foo() {
+    console.log(this.a); //12
+}
+foo();
+</code></pre><p>上面这段代码在全局环境下运行，在浏览器中，this默认指向的是window，所以打印出的是12，而在NodeJS环境下，this指向的是global对象。</p>
+<p>我们一般认为默认绑定指向的都是全局对象，值得注意的是，严格模式下却不是如此，默认绑定会失效。</p>
+<pre><code>‘use strict’;
+function foo() {
+    console.log(this); //undefined
+}
+foo();
+</code></pre><p>严格模式下，默认绑定的this变成了undefined。</p>
+<p>然后是隐式绑定，所谓隐式绑定，是当函数作为对象的方法被调用时，this的绑定方式：</p>
+<pre><code>var obj = {
+    foo: function (){
+        console.log(this);
+    }    
+}
+
+obj.foo(); //obj
+</code></pre><p>在这里，foo作为obj的方法被调用，这时候this指向的就是obj，值得注意的是，隐式绑定也存在失效的情况，我们接着上面的代码往下写：</p>
+<pre><code>var f = obj.foo;
+f(); // window
+</code></pre><p>这时候，打印出来的对象就变成了window，也就是说，隐式绑定失效，自动转成了默认绑定，发生这种情况的原因是因为this的指向关键在于函数被调用时的修饰，而不是函数本身。</p>
+<p>以上两种是比较常用的绑定方式，接下来我们来看看显式绑定，所谓显式，就是手动地去修改this的指向，使它可以指向我们希望的地方，最常见的方法就是通过Function.prototype中的call和apply方法：</p>
+<pre><code>function foo() {
+    console.log(this.a);
+}
+
+var obj = {
+    a:2
+};
+foo.call(obj); //2
+</code></pre><p>通过call可以修改this的指向，apply的作用也是这样，但他们的区别是call的参数是逐个传入，而apply则是将参数以数组的形式传入。</p>
+<p>由于显式绑定是一种非常有用的绑定模式，所以ES5提供内置的方法Function.prototype.bind，call和apply是在函数运行的时候改变this，而bind则是直接返回一个新的函数，这个函数的this指向绑定的对象，用法如下：</p>
+<pre><code>funciont foo() {
+    console.log(this.a);
+}
+
+var obj = {
+    a:2
+};
+var bar = foo.bind(obj);
+bar(); //2
+</code></pre><p>Javascript的很多内置函数都提供设置上下文的选项，它的原理和bind是一样的，确保调用的时候能指向我们希望的this:</p>
+<pre><code>function(el) {
+    console.log(el, this.id);
+}
+
+var obj = {
+    id : &apos;someid&apos;
+}
+
+[1,2,3].forEach(foo, obj);  // 1 someid 2 someid 3 someid
+</code></pre><p>最后来看看new绑定，其实也就是我们所熟知的构造函数：</p>
+<pre><code>function foo(a) {
+    this.a = a;
+}
+
+var bar = new foo(2);
+console.log(bar.a); //2
+</code></pre><p>在使用new构造对象时，其中的this默认指向我们构造出来的对象。构造函数也很匪夷所思的地方，就是它的返回值，一般情况下，如果不写return，返回的就是构造出来的对象啊，当如果有return，情况就不一样了：</p>
+<pre><code>function foo(a){
+    this.a = a;
+    return 3;
+}
+
+function goo(a){
+    this.a = a;
+    return {
+        a : 3
+    }
+}
+
+var obj1 = new foo(2);
+var obj2 = new goo(2);
+
+console.log(obj1.a); // 2
+console.log(obj2.a); // 3
+</code></pre><p>通过上面的代码我们可以看到，当构造函数return的是基本类型时，默认返回的是this对象，而如果return一个对象，则最后就会返回这个对象。</p>
+<h4 id="二-优先级问题"><a href="#二-优先级问题" class="headerlink" title="二. 优先级问题"></a>二. 优先级问题</h4><p>既然存在不同的绑定，那彼此之间必然也会有优先级的差异，默认绑定的优先级一定是最低的，这点毋庸置疑。那么，首先，我们可以来看看显式绑定和隐式绑定的优先级：</p>
+<pre><code>function foo() {
+    console.log(this.a);
+}
+var obj1 = {
+    a: 2,
+    foo: foo
+};
+
+var obj2 = {
+    a: 3
+};
+
+obj1.foo.call(obj2); // 3
+</code></pre><p>从上面的代码可以看到，显式绑定的优先级是更高的，那么，接下来，可以看看new绑定和隐式绑定的优先级对比：</p>
+<pre><code>function foo(a) {
+    this.a = a;
+}
+
+var obj1 = {
+    a: 3,
+    foo: foo
+};
+
+var obj2 = new obj1.foo(2);
+
+console.log(obj2.a); // 2
+console.log(obj1.a); // 3
+</code></pre><p>从上面的代码可以知道，obj1的a尚未被修改，而obj2却多了a属性为2，这说明new绑定的优先级也比隐式绑定要高。那么最后，我们只需要比较new绑定和显式绑定的优先级即可。</p>
+<p>然而，如果同时使用new和call，是会报错的，所以，我们只能比较bind和new的优先级，代码如下：</p>
+<pre><code>function(a) {
+    this.a = a;
+}
+var obj1 = {};
+var bar = foo.bind(obj1);
+
+var obj2 = new bar(2);
+
+console.log(obj1.a); // undefined
+console.log(obj2.a); // 2
+</code></pre><p>从上面的代码可以看出，obj1并没有生成a属性，this指向obj2，可见new绑定的优先级比显式绑定还高。</p>
+<p>到这里，我们就可以得出结论，优先级的顺序应该是new绑定&gt;显式绑定&gt;隐式绑定&gt;默认绑定。 </p>
+
+                </p>
+            </div>
+
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdn.rawgit.com/noelboss/featherlight/1.3.5/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+</body>
+
+</html>
