@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="z-index决定了元素以及其子元素的z顺序，而z顺序决定当元素发生覆盖的时候，哪个元素可以在上面，通常较大z-index值的元素可以覆盖较低的那个。
+一. z-index概览首先我们先来大致认识一下z-index，z-index的属性值只有三个：auto(默认值),integer(整数值),inh">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Light">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="又见CSS－－神奇的z-index属性"/>
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Light&#39;s Blog"/>
+
+    <!--Page Cover-->
+    
+        <meta property="og:image" content="undefined"/>
+    
+
+    <!-- Title -->
+    
+    <title>又见CSS－－神奇的z-index属性 - Light&#39;s Blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
+        <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
+    <!--<![endif]&ndash;&gt;-->
+
+</head>
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<div class="sidebar">
+    <div class="profile">
+        <a href="/">
+            <img src="/img/profile.jpg"></img>
+        </a>
+        <span>Light</span>
+    </div>
+
+    <ul class="menu">
+        <li>
+            <a href="/">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页
+            </a>
+        </li>
+         <li>
+            <a href="/about">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>关于
+            </a>
+        </li>
+    </ul>
+</div>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header">
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="post-meta">
+                    2015-10-11
+                </p>
+                <a href="/2015/10/11/又见CSS－－神奇的z-index属性/">
+                    <h2 class="post-title">
+                        又见CSS－－神奇的z-index属性
+                    </h2>
+                </a>
+
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container main content">
+        <div class="row">
+
+            <!-- Post Main Content -->
+            <div class="col-md-12">
+                <p class="post-content">
+                    <p>z-index决定了元素以及其子元素的z顺序，而z顺序决定当元素发生覆盖的时候，哪个元素可以在上面，通常较大z-index值的元素可以覆盖较低的那个。</p>
+<h4 id="一-z-index概览"><a href="#一-z-index概览" class="headerlink" title="一. z-index概览"></a>一. z-index概览</h4><p>首先我们先来大致认识一下z-index，z-index的属性值只有三个：auto(默认值),integer(整数值),inherit(继承)。除此以外，z-index有一些基本的特性：</p>
+<ol>
+<li>支持负值</li>
+<li>支持CSS3 animation动画</li>
+<li>在CSS2.1时代，需要配合定位使用</li>
+</ol>
+<p>值得注意的是第三点，也就是说如果不设置元素的定位(position)，z-index也就不会生效。</p>
+<h4 id="二-z-index的定位规则"><a href="#二-z-index的定位规则" class="headerlink" title="二. z-index的定位规则"></a>二. z-index的定位规则</h4><p>接下来我们来看看z-index的定位规则，一般来说，如果在没有嵌套的情况下，元素的层叠顺序遵循一下的准则:</p>
+<p>1.后来居上原则</p>
+<p>所谓后来居上，也就是说靠后的元素会覆盖靠前的元素，比如：</p>
+<pre><code>&lt;div class=&quot;box&quot; style=&quot;background:blue;position:absolute&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;box&quot; style=&quot;background:yellow;position:absolute&quot;&gt;&lt;/div&gt;
+</code></pre><p>黄色的方块出现比较晚，会覆盖蓝色的方块。</p>
+<p>2.z-index值为大的优先</p>
+<p>如果对上面的代码设置z-index，那结果可能也就不一样了：</p>
+<pre><code>&lt;div class=&quot;box&quot; style=&quot;background:blue;position:absolute;z-index:2&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;box&quot; style=&quot;background:yellow;position:absolute;z-index:1&quot;&gt;&lt;/div&gt;
+</code></pre><p>我们可以看到，蓝色元素覆盖了黄色元素，可见，z-index可以改变元素的默认层叠顺序。</p>
+<p>那么，如果z-index发生了嵌套呢，情况可能会有一点复杂，但其实也遵循相应的准则</p>
+<p>1.祖先优先原则</p>
+<pre><code>&lt;div class=&quot;box-container&quot; style=&quot;position:relative;z-index:1&quot;&gt;
+    &lt;div class=&quot;box box1&quot; style=&quot;background:blue;position:absolute;z-index:2&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;box-container&quot; style=&quot;position:relative;z-index:1&quot;&gt;
+    &lt;div class=&quot;box box2&quot; style=&quot;background:yellow;position:absolute;z-index:1&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre><p>我们可以看到结果如下：<br>    <img src="http://obtuati26.bkt.clouddn.com/image/2016-08/z-index-1.png" alt="alt text" title="Title"></p>
+<p>可见，虽然box1的z-index值高于box2,当是这种时候应该考虑它们的祖先，祖先元素在z-index相同的情况下遵循后来居上原则，所以box2会覆盖box1。<br>当然，这么比较的前提是z-index的值为数值，如果z-index的值为auto，其结果就截然相反了：</p>
+<pre><code>&lt;div class=&quot;box-container&quot; style=&quot;position:relative;z-index:auto&quot;&gt;
+    &lt;div class=&quot;box box1&quot; style=&quot;background:blue;position:absolute;z-index:2&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;box-container&quot; style=&quot;position:relative;z-index:1&quot;&gt;
+    &lt;div class=&quot;box box2&quot; style=&quot;background:yellow;position:absolute;z-index:1&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre><p>其结果就是：<br>    <img src="http://obtuati26.bkt.clouddn.com/image/2016-08/z-index-2.png" alt="alt text" title="Title"></p>
+<p>为什么呢？根据CSS2.1的定义，在z-index为auto的情况下，当前层叠上下文的层叠水平为0。盒子不会创建一个新的层叠上下文。</p>
+<h4 id="三-层叠上下文与层叠水平"><a href="#三-层叠上下文与层叠水平" class="headerlink" title="三. 层叠上下文与层叠水平"></a>三. 层叠上下文与层叠水平</h4><p>我们看到了两个定义，层叠上下文和层叠水平，那么，什么是层叠上下文呢？层叠上下文是HTML元素的三维概念，表示元素在z轴上可以高人一等，注意，层叠上下文相当于元素的一个属性，在不同的情况下，元素可能拥有这个属性，也可能没有。总结起来，一般两种情况可以让元素拥有层叠上下文：</p>
+<ol>
+<li>页面根元素天生就具有层叠上下文，称之为根元素层叠上下文</li>
+<li>z-index得值为数值的元素也可以拥有层叠上下文</li>
+</ol>
+<p>层叠上下文中的每一个元素都拥有一个层叠水平，决定了同一层元素在该层内的层叠顺序，遵循z-index的两个计算准则。</p>
+<p>层叠上下文拥有几个特性：</p>
+<ol>
+<li>层叠上下文可以嵌套，组成几个分层次的层叠上下文。这意味着一个层叠上下文元素的子元素也可以拥有层叠上下文。</li>
+<li>每个层叠上下文和兄弟元素独立，当进行变化或渲染时，只需要考虑后代元素，也就是，层叠上下文元素的层叠次序发生变化，不会影响兄弟元素，只会影响后代元素。</li>
+<li>每个层叠上下文都自成体系，子元素之间的相互比较全依赖同级父元素的层叠次序。</li>
+</ol>
+<p>了解了层叠上下文，我们再来看看层叠水平，其实，除了层叠上下文元素外，每一个元素都拥有层叠水平，网上有一张图很好的总结了元素层叠水平的比较准则：<br>    <img style="width: 50%" src="http://obtuati26.bkt.clouddn.com/image/2016-08/z-index-3" alt="alt text" title="Title"></p>
+<p>为什么是这个层叠顺序呢，我们一定会很好奇，为什么内联元素的层叠顺序会高于浮动元素，事实上，CSS如此定义是为了更好得表现页面，这个层叠顺序可以划分三类，装饰－&gt;布局-&gt;内容，越往后面优先级越高，浮动元素属于布局，而inline属于内容，自然优先级会比浮动元素高一些。我们可以感受一下：</p>
+<pre><code>&lt;div class=&quot;box box1&quot; style=&quot;background:blue;float:left;&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;box box2&quot; style=&quot;background:yellow;display:inline-block;margin-left:-20px;&quot;&gt;&lt;/div&gt;
+</code></pre><p>结果如下：<br>    <img src="http://obtuati26.bkt.clouddn.com/image/2016-08/z-index-4.png" alt="alt text" title="Title"></p>
+<p>最后我们来看看z-index和层叠上下文的关系：</p>
+<ol>
+<li>定位元素默认z-index为auto可以看成z-index为0</li>
+<li>z-index不为auto的定位元素会创建层叠上下文</li>
+<li>z-index的层叠次序比较止步于父级层叠上下文</li>
+</ol>
+
+                </p>
+            </div>
+
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Disqus Comments -->
+
+
+</body>
+
+</html>
