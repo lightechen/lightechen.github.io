@@ -112,10 +112,10 @@
     position: relative;
 }
 </code></pre><p>我们首先通过.pie实现了一个圆形，并将其居中方便我们进行观察，效果如下：</p>
-<p><img src="/img/circle-step-1.png" alt="alt text" title="Title">    </p>
+<p><img src="http://obtuati26.bkt.clouddn.com/image/2016-08/circle-step-1.png" alt="alt text" title="Title">    </p>
 <p>我们需要用蓝色来代表饼图的比例，《CSS Secret》给出的思路是覆盖一层与背景同色的伪元素上去，使其旋转露出比例的部分，那么首先，需要将圆形另一半的背景色置为蓝色，可以通过线性渐变来实现：</p>
 <pre><code>background-image: linear-gradient(to right, transparent 50%, #3195d0 0);
-</code></pre><p>效果如下：<br><img src="/img/circle-step-2.png" alt="alt text" title="Title">    </p>
+</code></pre><p>效果如下：<br><img src="http://obtuati26.bkt.clouddn.com/image/2016-08/circle-step-2.png" alt="alt text" title="Title">    </p>
 <p>然后，我们通过伪元素::before添加一层遮罩，使其遮挡住右半部分：</p>
 <pre><code>.pie::before {
     content: &apos;&apos;;
@@ -128,7 +128,7 @@
 </code></pre><p>伪元素的宽度为圆的一半，并位于右边遮挡住右半部分，当然，仅仅是这样还不够，这里的关键是设置border-radius使其呈现半圆形，border-radius通过/分隔四个角的水平半径和垂直半径。<br>这时候，我们通过transform可以使伪元素发生旋转，露出想要的比例：</p>
 <pre><code>transform-origin: left;
 transform: rotate(.1turn);
-</code></pre><p>效果如下：<br><img src="/img/circle-step-3.png" alt="alt text" title="Title"></p>
+</code></pre><p>效果如下：<br><img src="http://obtuati26.bkt.clouddn.com/image/2016-08/circle-step-3.png" alt="alt text" title="Title"></p>
 <p>已经离我们想要的越来越接近了，为了让饼图可以动起来，我们可以通过CSS3的animation来实现:</p>
 <pre><code>@keyframes spin {
     to {
@@ -167,7 +167,7 @@ transform: rotate(.1turn);
     background-color: #fff;
     border-radius: 50%;
 }
-</code></pre><p>最后的效果如下：<br><img src="/img/circle-step-4.png" alt="alt text" title="Title"></p>
+</code></pre><p>最后的效果如下：<br><img src="http://obtuati26.bkt.clouddn.com/image/2016-08/circle-step-4.png" alt="alt text" title="Title"></p>
 <p>如此就实现了一个简单的圆环，当然，你可以配合JS来添加一些交互，在这里安利一波《CSS Secret》，充满着CSS3黑科技的好书，据说中文版目前还没有人在翻译。</p>
 
                 </p>
